@@ -4,11 +4,11 @@ import {
   DialogContent,
   DialogTitle,
   DialogClose,
-  DialogTrigger
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+  DialogTrigger,
+} from "../ui/dialog";
+import { ButtonWithIcon } from "../atoms/button-with-icon";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { ComboBox } from "./combobox";
 import { PlusSquare, Save, X } from "lucide-react";
 import { Item } from "./combobox";
@@ -16,18 +16,18 @@ import { Item } from "./combobox";
 const priorities: Item[] = [
   {
     value: "high",
-    label: "Alta"
+    label: "Alta",
   },
   {
     value: "medium",
-    label: "Media"
+    label: "Media",
   },
   {
     value: "low",
-    label: "Baja"
+    label: "Baja",
   },
-]
-const nullText : string = "Establecer prioridad"
+];
+const nullText: string = "Establecer prioridad";
 // priorities y nullText son atributos necesarios para el componente ComboBox
 
 export function CreateTaskDialog() {
@@ -35,43 +35,49 @@ export function CreateTaskDialog() {
     <Dialog>
       {/* BOTON QUE ACTIVA EL DIALOG */}
       <DialogTrigger asChild>
-        <Button variant="default">
-          <PlusSquare />
+        <ButtonWithIcon variant="default" Icon={PlusSquare}>
           Crear Tarea
-        </Button>
+        </ButtonWithIcon>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[734px] bg-primary" aria-describedby={undefined}>
+      <DialogContent
+        className="sm:max-w-[734px] bg-primary"
+        aria-describedby={undefined}
+      >
         <DialogHeader>
           <DialogTitle>Crear nueva tarea</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col h-full w-full gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="task-name">Título</Label>
-            <Input id="task-name" className="" />
+            <Input id="task-name" />
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="task-responsible">Encargados</Label>
-            <Input id="task-responsible" className="" />
+            <Input id="task-responsible" />
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="task-priority">Prioridad</Label>
-            <ComboBox items={priorities} nullText={nullText}/>
+            <ComboBox items={priorities} nullText={nullText} />
           </div>
         </div>
         <div className="flex flex-row gap-2" data-slot="dialog-footer">
-          <Button variant="default" type="submit" className="text-primary">
-            <Save />
+          <ButtonWithIcon
+            variant="default"
+            type="submit"
+            className="text-primary"
+            Icon={Save}
+          >
             Guardar proyecto
-          </Button>
+          </ButtonWithIcon>
           <DialogClose asChild>
-            <Button
+            <ButtonWithIcon
               variant="destructive"
               type="button"
               className="text-primary"
+              Icon={X}
             >
-              <X />
               Cancelar
-            </Button>
+            </ButtonWithIcon>
           </DialogClose>
         </div>
       </DialogContent>

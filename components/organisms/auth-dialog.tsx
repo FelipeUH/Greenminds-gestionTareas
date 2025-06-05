@@ -6,8 +6,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
+} from "../ui/dialog";
+import { Button } from "../ui/button";
 import { Dispatch, SetStateAction } from "react";
 
 export function AuthDialog({
