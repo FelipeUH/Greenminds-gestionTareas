@@ -1,7 +1,7 @@
 import { Title } from "../atoms/title"
 import { Calendar } from "lucide-react"
 
-type ProjectCardProps = {
+export type ProjectCardProps = {
     projectName: string,
     projectManager: string,
     description: string
