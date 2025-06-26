@@ -4,6 +4,7 @@ import { ProjectCardProps } from "@/components/molecules/project-card";
 
 const projects : ProjectCardProps[] = [
   {
+    id: 1,
     projectName: "NOMBRE DEL PROYECTO",
     projectManager: "admin",
     description: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum ",

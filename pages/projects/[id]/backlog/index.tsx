@@ -85,7 +85,7 @@ export default function BacklogPage() {
         <ProjectLayout>
             <div className="flex flex-col p-12">
                 <div className="flex justify-between">
-                    <Title>Backlog</Title>
+                    <Title className="text-4xl">Backlog</Title>
                     <CreateTaskDialog />
                 </div>
                 <AppAccordion tasks={taskExamples} />

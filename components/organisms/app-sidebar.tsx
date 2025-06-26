@@ -16,17 +16,17 @@ import { Title } from "../atoms/title"
 const options = [
     {
       name: "Backlog",
-      url: "#",
+      url: "./backlog",
       icon: LayoutDashboard,
     },
     {
       name: "Análisis",
-      url: "#",
+      url: "./dashboard",
       icon: LineChart,
     },
     {
       name: "Configuración",
-      url: "#",
+      url: "./settings",
       icon: Cog,
     },
 ]
