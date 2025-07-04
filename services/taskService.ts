@@ -1,57 +1,60 @@
-import { supabase } from '@/lib/supabase';
-import { Database, Task } from '@/types/database';
-import { NotFoundError, ForbiddenError } from '@/utils/api';
-import { getPaginationParams, createPaginationResponse } from '@/utils/api';
-import { ProjectService } from './projectService';
+import { supabase } from "@/lib/supabase";
+import { Database, Task } from "@/types/database";
+import { NotFoundError, ForbiddenError } from "@/utils/api";
+import { getPaginationParams, createPaginationResponse } from "@/utils/api";
+import { ProjectService } from "./projectService";
 
-type TaskInsert = Database['public']['Tables']['tasks']['Insert'];
-type TaskUpdate = Database['public']['Tables']['tasks']['Update'];
+type TaskInsert = Database["public"]["Tables"]["tasks"]["Insert"];
+type TaskUpdate = Database["public"]["Tables"]["tasks"]["Update"];
 
 export class TaskService {
-  // Get tasks for a project
+  // Obtener tareas de un proyecto
   static async getProjectTasks(
     projectId: string,
     userId: string,
     page: number = 1,
     limit: number = 20,
     filters?: {
-      status?: 'unassigned' | 'assigned' | 'in_progress' | 'done';
-      priority?: 'high' | 'medium' | 'low';
+      status?: "unassigned" | "assigned" | "in_progress" | "done";
+      priority?: "high" | "medium" | "low";
       assigned_to?: string;
     }
   ) {
-    // Check if user has access to project
+    // Verificar si el usuario tiene acceso al proyecto
     const hasAccess = await ProjectService.checkUserAccess(projectId, userId);
     if (!hasAccess) {
-      throw new ForbiddenError('No tienes acceso a este proyecto');
+      throw new ForbiddenError("No tienes acceso a este proyecto");
     }
 
     const { from, to } = getPaginationParams(page, limit);
 
     let query = supabase
-      .from('tasks')
-      .select('*', { count: 'exact' })
-      .eq('project_id', projectId)
+      .from("tasks")
+      .select("*", { count: "exact" })
+      .eq("project_id", projectId)
       .range(from, to)
-      .order('created_at', { ascending: false });
+      .order("created_at", { ascending: false });
 
     if (filters?.status) {
-      query = query.eq('status', filters.status);
+      query = query.eq("status", filters.status);
     }
 
     if (filters?.priority) {
-      query = query.eq('priority', filters.priority);
+      query = query.eq("priority", filters.priority);
     }
 
     if (filters?.assigned_to) {
-      // Join with task_assignments to filter by assigned user
+      // Unir con task_assignments para filtrar por usuario asignado
       query = supabase
-        .from('task_assignments')
-        .select(`
+        .from("task_assignments")
+        .select(
+          `
           tasks!inner(*)
-        `, { count: 'exact' })
-        .eq('user_id', filters.assigned_to)
-        .eq('tasks.project_id', projectId)
+        `,
+          { count: "exact" }
+        )
+        .eq("user_id", filters.assigned_to)
+        .eq("tasks.project_id", projectId)
         .range(from, to);
     }
 
@@ -61,7 +64,7 @@ export class TaskService {
       throw new Error(`Error obteniendo tareas: ${error.message}`);
     }
 
-    const tasks: Task[] = data.map(task => ({
+    const tasks: Task[] = data.map((task) => ({
       id: task.id,
       project_id: task.project_id,
       title: task.title,
@@ -79,22 +82,25 @@ export class TaskService {
     return createPaginationResponse(tasks, count || 0, page, limit);
   }
 
-  // Get task by ID
+  // Obtener tarea por ID
   static async getTask(taskId: string, userId: string): Promise<Task> {
     const { data: task, error } = await supabase
-      .from('tasks')
-      .select('*')
-      .eq('id', taskId)
+      .from("tasks")
+      .select("*")
+      .eq("id", taskId)
       .single();
 
     if (error || !task) {
-      throw new NotFoundError('Tarea no encontrada');
+      throw new NotFoundError("Tarea no encontrada");
     }
 
-    // Check if user has access to the project
-    const hasAccess = await ProjectService.checkUserAccess(task.project_id, userId);
+    // Verificar si el usuario tiene acceso al proyecto
+    const hasAccess = await ProjectService.checkUserAccess(
+      task.project_id,
+      userId
+    );
     if (!hasAccess) {
-      throw new ForbiddenError('No tienes acceso a esta tarea');
+      throw new ForbiddenError("No tienes acceso a esta tarea");
     }
 
     return {
@@ -113,22 +119,22 @@ export class TaskService {
     };
   }
 
-  // Create new task
+  // Crear nueva tarea
   static async createTask(
     projectId: string,
-    taskData: Omit<TaskInsert, 'project_id' | 'created_by'>,
+    taskData: Omit<TaskInsert, "project_id" | "created_by">,
     userId: string,
     assignedUsers?: string[]
   ): Promise<Task> {
-    // Check if user has access to project
+    // Verificar si el usuario tiene acceso al proyecto
     const hasAccess = await ProjectService.checkUserAccess(projectId, userId);
     if (!hasAccess) {
-      throw new ForbiddenError('No tienes acceso a este proyecto');
+      throw new ForbiddenError("No tienes acceso a este proyecto");
     }
 
-    // Create task
+    // Crear tarea
     const { data: task, error: taskError } = await supabase
-      .from('tasks')
+      .from("tasks")
       .insert({
         ...taskData,
         project_id: projectId,
@@ -141,34 +147,34 @@ export class TaskService {
       throw new Error(`Error creando tarea: ${taskError?.message}`);
     }
 
-    // Assign users if provided
+    // Asignar usuarios si se proporcionan
     if (assignedUsers && assignedUsers.length > 0) {
-      const assignments = assignedUsers.map(userIdToAssign => ({
+      const assignments = assignedUsers.map((userIdToAssign) => ({
         task_id: task.id,
         user_id: userIdToAssign,
         assigned_by: userId,
       }));
 
       const { error: assignError } = await supabase
-        .from('task_assignments')
+        .from("task_assignments")
         .insert(assignments);
 
       if (assignError) {
-        console.error('Error assigning users to task:', assignError);
-        // Don't throw error here, task was created successfully
+        console.error("Error assigning users to task:", assignError);
+        // No lanzar error aquí, la tarea se creó exitosamente
       } else {
-        // Update task status to assigned
+        // Actualizar estado de la tarea a asignada
         await supabase
-          .from('tasks')
-          .update({ status: 'assigned' })
-          .eq('id', task.id);
+          .from("tasks")
+          .update({ status: "assigned" })
+          .eq("id", task.id);
       }
     }
 
     return this.getTask(task.id, userId);
   }
 
-  // Update task
+  // Actualizar tarea
   static async updateTask(
     taskId: string,
     updates: TaskUpdate,
@@ -176,16 +182,19 @@ export class TaskService {
   ): Promise<Task> {
     const task = await this.getTask(taskId, userId);
 
-    // Check if user can update this task (project member)
-    const hasAccess = await ProjectService.checkUserAccess(task.project_id, userId);
+    // Verificar si el usuario puede actualizar esta tarea (miembro del proyecto)
+    const hasAccess = await ProjectService.checkUserAccess(
+      task.project_id,
+      userId
+    );
     if (!hasAccess) {
-      throw new ForbiddenError('No tienes permisos para editar esta tarea');
+      throw new ForbiddenError("No tienes permisos para editar esta tarea");
     }
 
     const { data, error } = await supabase
-      .from('tasks')
+      .from("tasks")
       .update(updates)
-      .eq('id', taskId)
+      .eq("id", taskId)
       .select()
       .single();
 
@@ -196,29 +205,29 @@ export class TaskService {
     return this.getTask(taskId, userId);
   }
 
-  // Delete task
+  // Eliminar tarea
   static async deleteTask(taskId: string, userId: string): Promise<void> {
     const task = await this.getTask(taskId, userId);
 
-    // Check if user can delete this task (task creator or project admin)
+    // Verificar si el usuario puede eliminar esta tarea (creador de la tarea o administrador del proyecto)
     if (task.created_by !== userId) {
-      const hasAdminAccess = await ProjectService.checkAdminAccess(task.project_id, userId);
+      const hasAdminAccess = await ProjectService.checkAdminAccess(
+        task.project_id,
+        userId
+      );
       if (!hasAdminAccess) {
-        throw new ForbiddenError('No tienes permisos para eliminar esta tarea');
+        throw new ForbiddenError("No tienes permisos para eliminar esta tarea");
       }
     }
 
-    const { error } = await supabase
-      .from('tasks')
-      .delete()
-      .eq('id', taskId);
+    const { error } = await supabase.from("tasks").delete().eq("id", taskId);
 
     if (error) {
       throw new Error(`Error eliminando tarea: ${error.message}`);
     }
   }
 
-  // Assign user to task
+  // Asignar usuario a tarea
   static async assignUserToTask(
     taskId: string,
     userIdToAssign: string,
@@ -226,40 +235,46 @@ export class TaskService {
   ): Promise<void> {
     const task = await this.getTask(taskId, userId);
 
-    // Check if user has access to project
-    const hasAccess = await ProjectService.checkUserAccess(task.project_id, userId);
+    // Verificar si el usuario tiene acceso al proyecto
+    const hasAccess = await ProjectService.checkUserAccess(
+      task.project_id,
+      userId
+    );
     if (!hasAccess) {
-      throw new ForbiddenError('No tienes permisos para asignar esta tarea');
+      throw new ForbiddenError("No tienes permisos para asignar esta tarea");
     }
 
-    // Check if the user to assign is a project member
-    const hasUserAccess = await ProjectService.checkUserAccess(task.project_id, userIdToAssign);
+    // Verificar si el usuario a asignar es miembro del proyecto
+    const hasUserAccess = await ProjectService.checkUserAccess(
+      task.project_id,
+      userIdToAssign
+    );
     if (!hasUserAccess) {
-      throw new ForbiddenError('El usuario a asignar no es miembro del proyecto');
+      throw new ForbiddenError(
+        "El usuario a asignar no es miembro del proyecto"
+      );
     }
 
-    const { error } = await supabase
-      .from('task_assignments')
-      .insert({
-        task_id: taskId,
-        user_id: userIdToAssign,
-        assigned_by: userId,
-      });
+    const { error } = await supabase.from("task_assignments").insert({
+      task_id: taskId,
+      user_id: userIdToAssign,
+      assigned_by: userId,
+    });
 
     if (error) {
       throw new Error(`Error asignando usuario: ${error.message}`);
     }
 
-    // Update task status if it was unassigned
-    if (task.status === 'unassigned') {
+    // Actualizar estado de la tarea si estaba sin asignar
+    if (task.status === "unassigned") {
       await supabase
-        .from('tasks')
-        .update({ status: 'assigned' })
-        .eq('id', taskId);
+        .from("tasks")
+        .update({ status: "assigned" })
+        .eq("id", taskId);
     }
   }
 
-  // Unassign user from task
+  // Desasignar usuario de tarea
   static async unassignUserFromTask(
     taskId: string,
     userIdToUnassign: string,
@@ -267,51 +282,56 @@ export class TaskService {
   ): Promise<void> {
     const task = await this.getTask(taskId, userId);
 
-    // Check if user has access to project
-    const hasAccess = await ProjectService.checkUserAccess(task.project_id, userId);
+    // Verificar si el usuario tiene acceso al proyecto
+    const hasAccess = await ProjectService.checkUserAccess(
+      task.project_id,
+      userId
+    );
     if (!hasAccess) {
-      throw new ForbiddenError('No tienes permisos para desasignar esta tarea');
+      throw new ForbiddenError("No tienes permisos para desasignar esta tarea");
     }
 
     const { error } = await supabase
-      .from('task_assignments')
+      .from("task_assignments")
       .delete()
-      .eq('task_id', taskId)
-      .eq('user_id', userIdToUnassign);
+      .eq("task_id", taskId)
+      .eq("user_id", userIdToUnassign);
 
     if (error) {
       throw new Error(`Error desasignando usuario: ${error.message}`);
     }
 
-    // Check if task has any remaining assignments
+    // Verificar si la tarea tiene asignaciones restantes
     const { data: remainingAssignments } = await supabase
-      .from('task_assignments')
-      .select('id')
-      .eq('task_id', taskId);
+      .from("task_assignments")
+      .select("id")
+      .eq("task_id", taskId);
 
-    // If no assignments left, update status to unassigned
+    // Si no quedan asignaciones, actualizar estado a sin asignar
     if (!remainingAssignments || remainingAssignments.length === 0) {
       await supabase
-        .from('tasks')
-        .update({ status: 'unassigned' })
-        .eq('id', taskId);
+        .from("tasks")
+        .update({ status: "unassigned" })
+        .eq("id", taskId);
     }
   }
 
-  // Get task assignments
+  // Obtener asignaciones de tarea
   static async getTaskAssignments(taskId: string, userId: string) {
-    await this.getTask(taskId, userId); // Check access
+    await this.getTask(taskId, userId); // Verificar acceso
 
     const { data, error } = await supabase
-      .from('task_assignments')
-      .select(`
+      .from("task_assignments")
+      .select(
+        `
         id,
         user_id,
         assigned_at,
         assigned_by,
         profiles!task_assignments_user_id_fkey(id, email, full_name, username)
-      `)
-      .eq('task_id', taskId);
+      `
+      )
+      .eq("task_id", taskId);
 
     if (error) {
       throw new Error(`Error obteniendo asignaciones: ${error.message}`);

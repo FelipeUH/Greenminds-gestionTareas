@@ -1,14 +1,22 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase';
-import { withErrorHandler, validateRequest, validateMethod, successResponse } from '@/utils/api';
-import { registerSchema } from '@/validators/schemas';
+import { NextApiRequest, NextApiResponse } from "next";
+import { supabase } from "@/lib/supabase";
+import {
+  withErrorHandler,
+  validateRequest,
+  validateMethod,
+  successResponse,
+} from "@/utils/api";
+import { registerSchema } from "@/validators/schemas";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  validateMethod(req, ['POST']);
+  validateMethod(req, ["POST"]);
 
-  const { email, password, full_name, username } = validateRequest(req.body, registerSchema);
+  const { email, password, full_name, username } = validateRequest(
+    req.body,
+    registerSchema
+  );
 
-  // Create user with Supabase Auth
+  // Crear usuario con Supabase Auth
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
@@ -25,20 +33,26 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (!authData.user) {
-    return res.status(400).json({ error: 'Error creando usuario' });
+    return res.status(400).json({ error: "Error creando usuario" });
   }
 
-  // The profile will be created automatically by the database trigger
-  // Return success response
-  successResponse(res, {
-    user: {
-      id: authData.user.id,
-      email: authData.user.email,
-      full_name,
-      username,
+  // El perfil se creará automáticamente por el trigger de la base de datos
+  // Retornar respuesta de éxito
+  successResponse(
+    res,
+    {
+      user: {
+        id: authData.user.id,
+        email: authData.user.email,
+        full_name,
+        username,
+      },
+      message:
+        "Usuario registrado exitosamente. Revisa tu email para confirmar tu cuenta.",
     },
-    message: 'Usuario registrado exitosamente. Revisa tu email para confirmar tu cuenta.',
-  }, 'Usuario registrado exitosamente', 201);
+    "Usuario registrado exitosamente",
+    201
+  );
 }
 
 export default withErrorHandler(handler);

@@ -1,4 +1,4 @@
-// Database types based on Supabase schema
+// Tipos de base de datos basados en el esquema de Supabase
 export interface Database {
   public: {
     Tables: {
@@ -39,7 +39,7 @@ export interface Database {
           project_manager_id: string;
           start_date: string | null;
           end_date: string | null;
-          status: 'active' | 'completed' | 'archived';
+          status: "active" | "completed" | "archived";
           created_at: string;
           updated_at: string;
         };
@@ -50,7 +50,7 @@ export interface Database {
           project_manager_id: string;
           start_date?: string | null;
           end_date?: string | null;
-          status?: 'active' | 'completed' | 'archived';
+          status?: "active" | "completed" | "archived";
           created_at?: string;
           updated_at?: string;
         };
@@ -61,7 +61,7 @@ export interface Database {
           project_manager_id?: string;
           start_date?: string | null;
           end_date?: string | null;
-          status?: 'active' | 'completed' | 'archived';
+          status?: "active" | "completed" | "archived";
           created_at?: string;
           updated_at?: string;
         };
@@ -71,21 +71,21 @@ export interface Database {
           id: string;
           project_id: string;
           user_id: string;
-          role: 'admin' | 'member';
+          role: "admin" | "member";
           joined_at: string;
         };
         Insert: {
           id?: string;
           project_id: string;
           user_id: string;
-          role?: 'admin' | 'member';
+          role?: "admin" | "member";
           joined_at?: string;
         };
         Update: {
           id?: string;
           project_id?: string;
           user_id?: string;
-          role?: 'admin' | 'member';
+          role?: "admin" | "member";
           joined_at?: string;
         };
       };
@@ -95,8 +95,8 @@ export interface Database {
           project_id: string;
           title: string;
           description: string | null;
-          priority: 'high' | 'medium' | 'low';
-          status: 'unassigned' | 'assigned' | 'in_progress' | 'done';
+          priority: "high" | "medium" | "low";
+          status: "unassigned" | "assigned" | "in_progress" | "done";
           created_by: string;
           due_date: string | null;
           estimated_hours: number | null;
@@ -109,8 +109,8 @@ export interface Database {
           project_id: string;
           title: string;
           description?: string | null;
-          priority?: 'high' | 'medium' | 'low';
-          status?: 'unassigned' | 'assigned' | 'in_progress' | 'done';
+          priority?: "high" | "medium" | "low";
+          status?: "unassigned" | "assigned" | "in_progress" | "done";
           created_by: string;
           due_date?: string | null;
           estimated_hours?: number | null;
@@ -123,8 +123,8 @@ export interface Database {
           project_id?: string;
           title?: string;
           description?: string | null;
-          priority?: 'high' | 'medium' | 'low';
-          status?: 'unassigned' | 'assigned' | 'in_progress' | 'done';
+          priority?: "high" | "medium" | "low";
+          status?: "unassigned" | "assigned" | "in_progress" | "done";
           created_by?: string;
           due_date?: string | null;
           estimated_hours?: number | null;
@@ -218,7 +218,7 @@ export interface Database {
   };
 }
 
-// Frontend types
+// Tipos para el frontend
 export interface User {
   id: string;
   email: string;
@@ -235,7 +235,7 @@ export interface Project {
   project_manager?: User;
   start_date?: string;
   end_date?: string;
-  status: 'active' | 'completed' | 'archived';
+  status: "active" | "completed" | "archived";
   members?: ProjectMember[];
   created_at: string;
   updated_at: string;
@@ -246,7 +246,7 @@ export interface ProjectMember {
   project_id: string;
   user_id: string;
   user?: User;
-  role: 'admin' | 'member';
+  role: "admin" | "member";
   joined_at: string;
 }
 
@@ -255,8 +255,8 @@ export interface Task {
   project_id: string;
   title: string;
   description?: string;
-  priority: 'high' | 'medium' | 'low';
-  status: 'unassigned' | 'assigned' | 'in_progress' | 'done';
+  priority: "high" | "medium" | "low";
+  status: "unassigned" | "assigned" | "in_progress" | "done";
   created_by: string;
   creator?: User;
   due_date?: string;
@@ -301,7 +301,7 @@ export interface FileAttachment {
   created_at: string;
 }
 
-// API Response types
+// Tipos de respuesta de la API
 export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
@@ -318,7 +318,7 @@ export interface PaginatedResponse<T> {
   };
 }
 
-// Dashboard statistics
+// Estadísticas del panel de control
 export interface DashboardStats {
   projectsCount: number;
   tasksCount: {

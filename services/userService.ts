@@ -1,20 +1,20 @@
-import { supabase } from '@/lib/supabase';
-import { Database, User } from '@/types/database';
-import { NotFoundError } from '@/utils/api';
+import { supabase } from "@/lib/supabase";
+import { Database, User } from "@/types/database";
+import { NotFoundError } from "@/utils/api";
 
-type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
+type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"];
 
 export class UserService {
-  // Get user profile by ID
+  // Obtener perfil de usuario por ID
   static async getProfile(userId: string): Promise<User> {
     const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
       .single();
 
     if (error || !data) {
-      throw new NotFoundError('Usuario no encontrado');
+      throw new NotFoundError("Usuario no encontrado");
     }
 
     return {
@@ -26,18 +26,18 @@ export class UserService {
     };
   }
 
-  // Get multiple users by IDs
+  // Obtener múltiples usuarios por IDs
   static async getProfiles(userIds: string[]): Promise<User[]> {
     const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .in('id', userIds);
+      .from("profiles")
+      .select("*")
+      .in("id", userIds);
 
     if (error) {
       throw new Error(`Error obteniendo perfiles: ${error.message}`);
     }
 
-    return data.map(profile => ({
+    return data.map((profile) => ({
       id: profile.id,
       email: profile.email,
       full_name: profile.full_name || undefined,
@@ -46,12 +46,15 @@ export class UserService {
     }));
   }
 
-  // Update user profile
-  static async updateProfile(userId: string, updates: ProfileUpdate): Promise<User> {
+  // Actualizar perfil de usuario
+  static async updateProfile(
+    userId: string,
+    updates: ProfileUpdate
+  ): Promise<User> {
     const { data, error } = await supabase
-      .from('profiles')
+      .from("profiles")
       .update(updates)
-      .eq('id', userId)
+      .eq("id", userId)
       .select()
       .single();
 
@@ -68,19 +71,21 @@ export class UserService {
     };
   }
 
-  // Search users by email or name
+  // Buscar usuarios por email o nombre
   static async searchUsers(query: string, limit: number = 10): Promise<User[]> {
     const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .or(`email.ilike.%${query}%,full_name.ilike.%${query}%,username.ilike.%${query}%`)
+      .from("profiles")
+      .select("*")
+      .or(
+        `email.ilike.%${query}%,full_name.ilike.%${query}%,username.ilike.%${query}%`
+      )
       .limit(limit);
 
     if (error) {
       throw new Error(`Error buscando usuarios: ${error.message}`);
     }
 
-    return data.map(profile => ({
+    return data.map((profile) => ({
       id: profile.id,
       email: profile.email,
       full_name: profile.full_name || undefined,
@@ -89,69 +94,81 @@ export class UserService {
     }));
   }
 
-  // Check if username is available
-  static async isUsernameAvailable(username: string, excludeUserId?: string): Promise<boolean> {
-    let query = supabase
-      .from('profiles')
-      .select('id')
-      .eq('username', username);
+  // Verificar si el nombre de usuario está disponible
+  static async isUsernameAvailable(
+    username: string,
+    excludeUserId?: string
+  ): Promise<boolean> {
+    let query = supabase.from("profiles").select("id").eq("username", username);
 
     if (excludeUserId) {
-      query = query.neq('id', excludeUserId);
+      query = query.neq("id", excludeUserId);
     }
 
     const { data, error } = await query;
 
     if (error) {
-      throw new Error(`Error verificando disponibilidad de usuario: ${error.message}`);
+      throw new Error(
+        `Error verificando disponibilidad de usuario: ${error.message}`
+      );
     }
 
     return data.length === 0;
   }
 
-  // Get user statistics
+  // Obtener estadísticas del usuario
   static async getUserStats(userId: string) {
-    // Get projects where user is manager
+    // Obtener proyectos donde el usuario es gerente
     const { data: managedProjects, error: managedError } = await supabase
-      .from('projects')
-      .select('id')
-      .eq('project_manager_id', userId);
+      .from("projects")
+      .select("id")
+      .eq("project_manager_id", userId);
 
     if (managedError) {
-      throw new Error(`Error obteniendo proyectos gestionados: ${managedError.message}`);
+      throw new Error(
+        `Error obteniendo proyectos gestionados: ${managedError.message}`
+      );
     }
 
-    // Get projects where user is member
+    // Obtener proyectos donde el usuario es miembro
     const { data: memberProjects, error: memberError } = await supabase
-      .from('project_members')
-      .select('project_id')
-      .eq('user_id', userId);
+      .from("project_members")
+      .select("project_id")
+      .eq("user_id", userId);
 
     if (memberError) {
-      throw new Error(`Error obteniendo proyectos como miembro: ${memberError.message}`);
+      throw new Error(
+        `Error obteniendo proyectos como miembro: ${memberError.message}`
+      );
     }
 
-    // Get tasks assigned to user
+    // Obtener tareas asignadas al usuario
     const { data: assignedTasks, error: tasksError } = await supabase
-      .from('task_assignments')
-      .select(`
+      .from("task_assignments")
+      .select(
+        `
         task_id,
         tasks!inner(status)
-      `)
-      .eq('user_id', userId);
+      `
+      )
+      .eq("user_id", userId);
 
     if (tasksError) {
-      throw new Error(`Error obteniendo tareas asignadas: ${tasksError.message}`);
+      throw new Error(
+        `Error obteniendo tareas asignadas: ${tasksError.message}`
+      );
     }
 
-    // Get tasks created by user
+    // Obtener tareas creadas por el usuario
     const { data: createdTasks, error: createdError } = await supabase
-      .from('tasks')
-      .select('id, status')
-      .eq('created_by', userId);
+      .from("tasks")
+      .select("id, status")
+      .eq("created_by", userId);
 
     if (createdError) {
-      throw new Error(`Error obteniendo tareas creadas: ${createdError.message}`);
+      throw new Error(
+        `Error obteniendo tareas creadas: ${createdError.message}`
+      );
     }
 
     return {
@@ -160,7 +177,7 @@ export class UserService {
       tasksAssigned: assignedTasks.length,
       tasksCreated: createdTasks.length,
       tasksByStatus: {
-        assigned: 0, // Will be calculated properly with a better query
+        assigned: 0, // Se calculará correctamente con una consulta mejor
         in_progress: 0,
         done: 0,
       },

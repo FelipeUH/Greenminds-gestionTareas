@@ -1,10 +1,10 @@
--- GreenMinds Task Management Database Schema
--- Run this in your Supabase SQL Editor
+-- Esquema de Base de Datos para Gestión de Tareas GreenMinds
+-- Ejecutar esto en el Editor SQL de Supabase
 
--- Enable UUID extension
+-- Habilitar extensión UUID
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Users table (extends Supabase auth.users)
+-- Tabla de usuarios (extiende auth.users de Supabase)
 CREATE TABLE public.profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE,
   email TEXT NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE public.profiles (
   PRIMARY KEY (id)
 );
 
--- Projects table
+-- Tabla de proyectos
 CREATE TABLE public.projects (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   name TEXT NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE public.projects (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Project members table (many-to-many)
+-- Tabla de miembros del proyecto (muchos-a-muchos)
 CREATE TABLE public.project_members (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE public.project_members (
   UNIQUE(project_id, user_id)
 );
 
--- Tasks table
+-- Tabla de tareas
 CREATE TABLE public.tasks (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE public.tasks (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Task assignments table (many-to-many)
+-- Tabla de asignaciones de tareas (muchos-a-muchos)
 CREATE TABLE public.task_assignments (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   task_id UUID REFERENCES public.tasks(id) ON DELETE CASCADE NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE public.task_assignments (
   UNIQUE(task_id, user_id)
 );
 
--- Task comments table
+-- Tabla de comentarios de tareas
 CREATE TABLE public.task_comments (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   task_id UUID REFERENCES public.tasks(id) ON DELETE CASCADE NOT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE public.task_comments (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- File attachments table
+-- Tabla de archivos adjuntos
 CREATE TABLE public.file_attachments (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   task_id UUID REFERENCES public.tasks(id) ON DELETE CASCADE,
@@ -88,7 +88,7 @@ CREATE TABLE public.file_attachments (
   CHECK (task_id IS NOT NULL OR project_id IS NOT NULL)
 );
 
--- Enable Row Level Security
+-- Habilitar Seguridad a Nivel de Fila
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.project_members ENABLE ROW LEVEL SECURITY;
@@ -97,16 +97,16 @@ ALTER TABLE public.task_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.task_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.file_attachments ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies
+-- Políticas RLS
 
--- Profiles policies
+-- Políticas de perfiles
 CREATE POLICY "Users can view all profiles" ON public.profiles
   FOR SELECT USING (true);
 
 CREATE POLICY "Users can update own profile" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
 
--- Projects policies
+-- Políticas de proyectos
 CREATE POLICY "Users can view projects they're members of" ON public.projects
   FOR SELECT USING (
     id IN (
@@ -121,7 +121,7 @@ CREATE POLICY "Project managers can update projects" ON public.projects
 CREATE POLICY "Users can create projects" ON public.projects
   FOR INSERT WITH CHECK (project_manager_id = auth.uid());
 
--- Project members policies
+-- Políticas de miembros del proyecto
 CREATE POLICY "Users can view project members for their projects" ON public.project_members
   FOR SELECT USING (
     project_id IN (
@@ -130,7 +130,7 @@ CREATE POLICY "Users can view project members for their projects" ON public.proj
     )
   );
 
--- Tasks policies
+-- Políticas de tareas
 CREATE POLICY "Users can view tasks for their projects" ON public.tasks
   FOR SELECT USING (
     project_id IN (
@@ -155,7 +155,7 @@ CREATE POLICY "Users can update tasks for their projects" ON public.tasks
     )
   );
 
--- Functions for updated_at triggers
+-- Funciones para triggers de updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -164,7 +164,7 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Create triggers
+-- Crear triggers
 CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -174,7 +174,7 @@ CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON public.projects
 CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON public.tasks
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Create function to handle new user registration
+-- Crear función para manejar el registro de nuevos usuarios
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
@@ -184,7 +184,7 @@ BEGIN
 END;
 $$ language plpgsql security definer;
 
--- Trigger the function every time a user is created
+-- Activar la función cada vez que se crea un usuario
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
