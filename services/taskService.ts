@@ -113,6 +113,7 @@ export class TaskService {
       created_by: task.created_by,
       due_date: task.due_date || undefined,
       estimated_hours: task.estimated_hours || undefined,
+      assignees: task.assignees || undefined,
       actual_hours: task.actual_hours || undefined,
       created_at: task.created_at,
       updated_at: task.updated_at,

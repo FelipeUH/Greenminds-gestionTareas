@@ -66,6 +66,7 @@ npm run dev
 | POST   | `/api/auth/register` | Register new user |
 | POST   | `/api/auth/login`    | Login user        |
 | POST   | `/api/auth/logout`   | Logout user       |
+| GET    | `/api/auth/me`       | Restore session   |
 
 ### Users
 
@@ -85,15 +86,22 @@ npm run dev
 | PUT    | `/api/projects/[id]` | Update project      |
 | DELETE | `/api/projects/[id]` | Delete project      |
 
+### Project Members
+
+| Method | Endpoint                          | Description             |
+| ------ | --------------------------------- | ----------------------- |
+| GET    | `/api/projects/[id]/members`      | Get project members     |
+| POST   | `/api/projects/[id]/members`      | Add new user to project |
+
 ### Tasks
 
 | Method | Endpoint                          | Description             |
 | ------ | --------------------------------- | ----------------------- |
 | GET    | `/api/projects/[id]/tasks`        | Get project tasks       |
 | POST   | `/api/projects/[id]/tasks`        | Create new task         |
-| GET    | `/api/tasks/[taskId]`             | Get task details        |
-| PUT    | `/api/tasks/[taskId]`             | Update task             |
-| DELETE | `/api/tasks/[taskId]`             | Delete task             |
+| GET    | `/api/projects/[id]/[taskId]`     | Get task details        |
+| PUT    | `/api/projects/[id]/[taskId]`     | Update task             |
+| DELETE | `/api/projects/[id]/[taskId]`     | Delete task             |
 | GET    | `/api/tasks/[taskId]/assignments` | Get task assignments    |
 | POST   | `/api/tasks/[taskId]/assignments` | Assign user to task     |
 | DELETE | `/api/tasks/[taskId]/assignments` | Unassign user from task |

@@ -23,9 +23,11 @@ export type Item = {
 export function ComboBox({
 	items,
 	nullText,
+	onSelect, 
 }: {
 	items: Item[];
 	nullText: string;
+	onSelect: (item: Item | null) => void;
 }) {
 	const [open, setOpen] = useState(false);
 	const [selected, setSelected] = useState<Item | null>(null);
@@ -48,6 +50,7 @@ export function ComboBox({
 								onSelect={() => {
 									setSelected(item);
 									setOpen(false);
+									onSelect(item);
 								}}
 							>
 								{item.label}

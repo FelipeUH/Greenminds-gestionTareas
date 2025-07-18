@@ -8,25 +8,17 @@ import {
   DialogClose,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { Dispatch, SetStateAction } from "react";
+import { useDialog } from "@/context/DialogContext";
 
-export function AuthDialog({
-  title,
-  description,
-  open,
-  onOpenChange,
-}: {
-  title: string;
-  description: string;
-  open: boolean;
-  onOpenChange: Dispatch<SetStateAction<boolean>>;
-}) {
+export function GenericDialog() {
+  const { dialogOpen, dialogContent, closeDialog } = useDialog();
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={dialogOpen} onOpenChange={closeDialog}>
       <DialogContent className="sm:max-w-[425px] bg-primary">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogTitle>{dialogContent?.title}</DialogTitle>
+          <DialogDescription>{dialogContent?.description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>

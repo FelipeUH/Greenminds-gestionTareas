@@ -94,6 +94,21 @@ export class UserService {
     }));
   }
 
+  // Buscar usuario por email
+  static async searchUserByEmail(email: string): Promise<User> {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("email", email)
+      .single();
+
+    if (error) {
+      throw new NotFoundError(`Error buscando usuario: ${error.message}`);
+    }
+
+    return data;
+  }
+
   // Verificar si el nombre de usuario está disponible
   static async isUsernameAvailable(
     username: string,

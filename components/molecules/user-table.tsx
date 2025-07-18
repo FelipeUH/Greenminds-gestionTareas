@@ -1,6 +1,7 @@
-import { UserRowProps, UserRow } from "../atoms/user-row";
+import { Profile } from "@/types/database";
+import { UserRow } from "../atoms/user-row";
 
-export function UserTable({ users } : {users: UserRowProps[]}) {
+export function UserTable({ users } : {users: Profile[]}) {
 
     return (
         <div>
@@ -8,7 +9,7 @@ export function UserTable({ users } : {users: UserRowProps[]}) {
                 users.map((user, i) => 
                     <UserRow 
                         key={i}
-                        username={user.username}
+                        username={user.full_name}
                         email={user.email}
                     />
                 )

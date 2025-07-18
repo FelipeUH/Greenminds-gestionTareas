@@ -1,65 +1,128 @@
 import { TaskCard } from "@/components/molecules/task-card";
-import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+} from "@/components/ui/accordion";
 import { AccordionTrigger } from "@/components/atoms/accordion-trigger";
-
-// Tipo de tareas
-type TaskExamples = {
-    taskTitle: string;
-    assignedUsers: string[];
-    priorityLevel: "high" | "medium" | "low";
-    taskState: "unassigned" | "assigned" | "done";
-}
+import { Task } from "@/types/database";
+import { useEffect, useState } from "react";
+import { TaskModal } from "./task-modal";
+import { useDialog } from "@/context/DialogContext";
+import { useRouter } from "next/router";
 
 interface AppAccordionProps {
-    tasks: TaskExamples[];
+	tasks: Task[];
 }
 
 export const AppAccordion = ({ tasks }: AppAccordionProps) => {
-    const unassignedTasks = tasks.filter(task => task.taskState === "unassigned");
-    const assignedTasks = tasks.filter(task => task.taskState === "assigned");
-    const doneTasks = tasks.filter(task => task.taskState === "done");
+	const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
-    return (
-        <Accordion type="multiple" className="w-full">
-            <AccordionItem value="item-1">
-                <AccordionTrigger>Sin Asignar</AccordionTrigger>
-                <AccordionContent className="flex flex-col gap-4">
-                    {unassignedTasks.map((task, index) => (
-                        <TaskCard
-                            taskTitle={task.taskTitle}
-                            assignedUsers={task.assignedUsers}
-                            priorityLevel={task.priorityLevel}
-                            key={index}
-                        />
-                    ))}
-                </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-2">
-                <AccordionTrigger>Asignadas</AccordionTrigger>
-                <AccordionContent className="flex flex-col gap-4">
-                    {assignedTasks.map((task, index) => (
-                        <TaskCard
-                            taskTitle={task.taskTitle}
-                            assignedUsers={task.assignedUsers}
-                            priorityLevel={task.priorityLevel}
-                            key={index}
-                        />
-                    ))}
-                </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-3">
-                <AccordionTrigger>Terminadas</AccordionTrigger>
-                <AccordionContent className="flex flex-col gap-4">
-                    {doneTasks.map((task, index) => (
-                        <TaskCard
-                            taskTitle={task.taskTitle}
-                            assignedUsers={task.assignedUsers}
-                            priorityLevel={task.priorityLevel}
-                            key={index}
-                        />
-                    ))}
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
-    );
+    const { openDialog } = useDialog();
+    const router = useRouter();
+    const [isReady, setIsReady] = useState(false);
+    const { id } = router.query;
+
+	const unassignedTasks = tasks.filter((task) => task.status === "unassigned");
+	const assignedTasks = tasks.filter((task) => task.status === "assigned");
+	const doneTasks = tasks.filter((task) => task.status === "done");
+
+    useEffect(() => {
+        if (router.isReady) {
+            setIsReady(true);
+        }
+    }, [router.isReady]);
+
+	const handleTaskClick = (task: Task) => {
+		setSelectedTask(task);
+		setIsModalOpen(true);
+	};
+
+	const markAsDone = async () => {
+		const access_token = localStorage.getItem("access_token");
+        if (!access_token || !selectedTask || !isReady) return;
+
+        const taskId = selectedTask.id;
+
+        try {
+            const res = await fetch(`/api/projects/${id}/${taskId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type" : "application/json",
+                    Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify({ status: "done" })
+            });
+
+            if (!res.ok) {
+                throw new Error("Error al modificar la tarea");
+            }
+
+            openDialog({
+                title: "Modificación exitosa!",
+                description: "La tarea ahora está marcada como 'Terminada'.",
+            });
+        } catch (error: unknown) {
+            let message = "Ha ocurrido un error al actualizar la tarea";
+            if (error instanceof Error) {
+                message = error.message;
+            }
+            openDialog({
+                title: "Algo ha salido mal...",
+                description: message,
+            });
+        }
+	};
+
+	return (
+		<>
+			<Accordion type="multiple" className="w-full">
+				<AccordionItem value="item-1">
+					<AccordionTrigger className="cursor-pointer">Sin Asignar</AccordionTrigger>
+					<AccordionContent className="flex flex-col gap-4">
+						{unassignedTasks.map((task, index) => (
+							<TaskCard
+								onClick={() => handleTaskClick(task)}
+								task={task}
+								key={index}
+							/>
+						))}
+					</AccordionContent>
+				</AccordionItem>
+				<AccordionItem value="item-2">
+					<AccordionTrigger className="cursor-pointer">Asignadas</AccordionTrigger>
+					<AccordionContent className="flex flex-col gap-4">
+						{assignedTasks.map((task, index) => (
+							<TaskCard
+								onClick={() => handleTaskClick(task)}
+								task={task}
+								key={index}
+							/>
+						))}
+					</AccordionContent>
+				</AccordionItem>
+				<AccordionItem value="item-3">
+					<AccordionTrigger className="cursor-pointer">Terminadas</AccordionTrigger>
+					<AccordionContent className="flex flex-col gap-4">
+						{doneTasks.map((task, index) => (
+							<TaskCard
+								onClick={() => handleTaskClick(task)}
+								task={task}
+								key={index}
+							/>
+						))}
+					</AccordionContent>
+				</AccordionItem>
+			</Accordion>
+			{selectedTask && (
+				<TaskModal
+					modalOpen={isModalOpen}
+					setModalOpen={setIsModalOpen}
+					task={selectedTask}
+					onMarkAsDone={markAsDone}
+				/>
+			)}
+		</>
+	);
 };

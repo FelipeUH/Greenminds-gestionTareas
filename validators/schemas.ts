@@ -54,12 +54,12 @@ export const updateProjectSchema = z.object({
     .max(100, "El nombre es muy largo")
     .optional(),
   description: z.string().max(500, "La descripción es muy larga").optional(),
-  end_date: z.string().datetime().optional(),
+  end_date: z.string().date().optional(),
   status: z.enum(["active", "completed", "archived"]).optional(),
 });
 
 export const addProjectMemberSchema = z.object({
-  user_id: z.string().uuid("ID de usuario inválido"),
+  email: z.string().email("Email inválido"),
   role: z.enum(["admin", "member"]).default("member"),
 });
 
@@ -89,7 +89,7 @@ export const updateTaskSchema = z.object({
   description: z.string().max(1000, "La descripción es muy larga").optional(),
   priority: z.enum(["high", "medium", "low"]).optional(),
   status: z.enum(["unassigned", "assigned", "in_progress", "done"]).optional(),
-  due_date: z.string().datetime().optional(),
+  due_date: z.string().date().optional(),
   estimated_hours: z
     .number()
     .positive("Las horas estimadas deben ser positivas")

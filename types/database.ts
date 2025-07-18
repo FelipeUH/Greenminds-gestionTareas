@@ -227,11 +227,19 @@ export interface User {
   avatar_url?: string;
 }
 
+export interface Profile {
+  id: string;
+  email: string;
+  full_name: string;
+  username?: string;
+}
+
 export interface Project {
   id: string;
   name: string;
   description?: string;
   project_manager_id: string;
+  project_manager_name: string;
   project_manager?: User;
   start_date?: string;
   end_date?: string;
@@ -273,6 +281,7 @@ export interface TaskAssignment {
   id: string;
   task_id: string;
   user_id: string;
+  user_fullname: string;
   user?: User;
   assigned_at: string;
   assigned_by: string;

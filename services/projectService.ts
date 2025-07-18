@@ -19,7 +19,7 @@ export class ProjectService {
     // Obtener proyectos donde el usuario es gerente
     let managerQuery = supabase
       .from("projects")
-      .select("*", { count: "exact" })
+      .select("*, manager:profiles!projects_project_manager_id_fkey(id, full_name)", { count: "exact" })
       .eq("project_manager_id", userId);
 
     if (status) {
@@ -36,7 +36,7 @@ export class ProjectService {
 
     let memberQuery = supabase
       .from("projects")
-      .select("*")
+      .select("*, manager:profiles!projects_project_manager_id_fkey(id, full_name)")
       .in("id", projectIds);
 
     if (status) {
@@ -75,6 +75,7 @@ export class ProjectService {
       name: project.name,
       description: project.description || undefined,
       project_manager_id: project.project_manager_id,
+      project_manager_name: project.manager?.full_name || "",
       start_date: project.start_date || undefined,
       end_date: project.end_date || undefined,
       status: project.status,
@@ -100,7 +101,7 @@ export class ProjectService {
 
     const { data, error } = await supabase
       .from("projects")
-      .select("*")
+      .select("*, manager:profiles!projects_project_manager_id_fkey(id, full_name)")
       .eq("id", projectId)
       .single();
 
@@ -113,6 +114,7 @@ export class ProjectService {
       name: data.name,
       description: data.description || undefined,
       project_manager_id: data.project_manager_id,
+      project_manager_name: data.manager?.full_name || "",
       start_date: data.start_date || undefined,
       end_date: data.end_date || undefined,
       status: data.status,
@@ -228,15 +230,21 @@ export class ProjectService {
       throw new ForbiddenError("No tienes permisos para agregar miembros");
     }
 
-    const { error } = await supabase.from("project_members").insert({
+    const { data: member, error: memberError } = await supabase
+    .from("project_members")
+    .insert({
       project_id: projectId,
       user_id: newMemberUserId,
       role,
-    });
+    })
+    .select()
+    .single();
 
-    if (error) {
-      throw new Error(`Error agregando miembro: ${error.message}`);
+    if (!member || memberError) {
+      throw new Error(`Error agregando miembro: ${memberError?.message}`);
     }
+
+    return member;
   }
 
   // Remover miembro del proyecto

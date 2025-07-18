@@ -1,14 +1,15 @@
 import { Title } from "../atoms/title";
 import { CreateProjectDialog } from "./create-project-dialog";
-import { ProjectCard, ProjectCardProps } from "../molecules/project-card";
+import { ProjectCard } from "../molecules/project-card";
 import { cn } from "@/lib/utils";
 import { EyeOff } from "lucide-react";
+import { Project } from "@/types/database";
 
 interface YourProjectsProps extends React.ComponentProps<"div"> {
-  projects?: ProjectCardProps[];
+  projects: Project[];
 }
 
-export function YourProjects({projects = [], className, ...props }: YourProjectsProps) {
+export function YourProjects({projects, className, ...props }: YourProjectsProps) {
   return (
     <div className={cn("bg-primary rounded-xl shadow-md p-12 flex flex-col gap-10", className)} {...props}>
         <div className="w-full flex justify-between">
