@@ -21,3 +21,13 @@ Greenminds es una aplicación web enfocada en la gestión de tareas y proyectos 
 - Supabase (Base de datos)
 
 - Vercel (Despliegue)
+
+---
+# Despliegue en vercel
+https://equipo04-greenminds.vercel.app/
+
+Usuario de ejemplo para entrar a la aplicación: 
+
+        Usuario: usuario@ejemplo.com
+        Contraseña: 12345678
+---
