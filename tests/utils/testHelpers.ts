@@ -1,4 +1,4 @@
-import { createMocks } from "node-mocks-http";
+import { createMocks, MockResponse, RequestMethod } from "node-mocks-http";
 import { NextApiRequest, NextApiResponse } from "next";
 import { AuthenticatedRequest } from "@/utils/auth";
 
@@ -54,7 +54,7 @@ export function createApiMocks(options: {
   user?: typeof mockUser;
 }) {
   const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-    method: options.method || "GET",
+    method: (options.method || "GET") as RequestMethod,
     query: options.query || {},
     body: options.body || {},
     headers: {
@@ -65,10 +65,10 @@ export function createApiMocks(options: {
 
   // Agregar usuario autenticado si se proporciona
   if (options.user) {
-    (req as AuthenticatedRequest).user = options.user;
+    (req as unknown as AuthenticatedRequest).user = options.user;
   }
 
-  return { req: req as AuthenticatedRequest, res };
+  return { req: req as unknown as AuthenticatedRequest, res };
 }
 
 /**
@@ -116,7 +116,7 @@ export const mockSupabaseClient = {
  * Función helper para hacer assertions en respuestas de API exitosas
  */
 export function expectApiResponse(
-  res: NextApiResponse,
+  res: MockResponse<NextApiResponse>,
   statusCode: number,
   expectedData?: any
 ) {
@@ -132,7 +132,7 @@ export function expectApiResponse(
  * Función helper para hacer assertions en errores de API
  */
 export function expectApiError(
-  res: NextApiResponse,
+  res: MockResponse<NextApiResponse>,
   statusCode: number,
   expectedMessage?: string
 ) {
