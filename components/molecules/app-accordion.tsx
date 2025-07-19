@@ -15,6 +15,10 @@ interface AppAccordionProps {
 	tasks: Task[];
 }
 
+// Componente tipo acordion para mostrar las tareas del proyecto según el estado
+// 'Sin Asignar', 'Asignadas' o 'Terminadas'
+// Se implementa un componente TaskModal que permite mostrar información individual
+// de cada tarea, y marcarlas como 'Terminadas'
 export const AppAccordion = ({ tasks }: AppAccordionProps) => {
 	const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,6 +28,7 @@ export const AppAccordion = ({ tasks }: AppAccordionProps) => {
     const [isReady, setIsReady] = useState(false);
     const { id } = router.query;
 
+	// Filtro de tareas según estado
 	const unassignedTasks = tasks.filter((task) => task.status === "unassigned");
 	const assignedTasks = tasks.filter((task) => task.status === "assigned");
 	const doneTasks = tasks.filter((task) => task.status === "done");
@@ -34,11 +39,13 @@ export const AppAccordion = ({ tasks }: AppAccordionProps) => {
         }
     }, [router.isReady]);
 
+	// Función que se encarga de abrir el TaskModal
 	const handleTaskClick = (task: Task) => {
 		setSelectedTask(task);
 		setIsModalOpen(true);
 	};
 
+	// Función para marcar una tarea seleccionada cómo 'Terminada'
 	const markAsDone = async () => {
 		const access_token = localStorage.getItem("access_token");
         if (!access_token || !selectedTask || !isReady) return;

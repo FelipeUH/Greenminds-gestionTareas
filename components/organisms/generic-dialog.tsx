@@ -10,6 +10,9 @@ import {
 import { Button } from "../ui/button";
 import { useDialog } from "@/context/DialogContext";
 
+// Componente de dialog, permite mostrar mensajes personalizados al usuario
+// en cualquier parte de la aplicación, siempre que este contenido por un
+// DialogProvider. Arrojará error si se intenta usar fuera del proveedor
 export function GenericDialog() {
   const { dialogOpen, dialogContent, closeDialog } = useDialog();
 

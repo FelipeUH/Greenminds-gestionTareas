@@ -14,6 +14,9 @@ import { useState } from "react";
 import { useDialog } from "@/context/DialogContext";
 import { useRouter } from "next/router";
 
+// Componente de Dialog usado para añadir un nuevo miembro a un determinado
+// proyecto, este se añade mediante correo electronico haciendo llamada a la api de la aplicacion
+// Se muestra un dialog de error o exito según sea el caso
 export function AddMemberDialog() {
 	const [email, setEmail] = useState("");
 	const { openDialog } = useDialog();

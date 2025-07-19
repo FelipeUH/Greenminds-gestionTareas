@@ -14,6 +14,10 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useDialog } from "@/context/DialogContext";
 
+// Componente de formulario de registro de usuario, permite que los usuarios se
+// registren por medio de nombre de usuario, nombre completo, email y contraseña. 
+// También tiene un link que permite redireccionar a la pantalla de inicio de sesión
+// Se muestra un dialog de error según sea el caso
 export function RegisterForm({
 	className,
 	...props

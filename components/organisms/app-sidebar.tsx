@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Title } from "../atoms/title"
 
+// Definición de las secciones que se van a mostrar en el compomente NavProjects
 const options = [
     {
       name: "Backlog",
@@ -30,6 +31,8 @@ const options = [
     },
 ]
 
+// Componente de barra lateral de la aplicación, funciona como el componente principal 
+// para navegar a través de un determinado proyecto
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props} className="min-h-screen max-w-[364px] bg-secondary text-white p-6 pt-10">

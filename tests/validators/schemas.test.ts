@@ -3,9 +3,7 @@ import {
   registerSchema,
   updateProfileSchema,
   createProjectSchema,
-  updateProjectSchema,
   createTaskSchema,
-  updateTaskSchema,
   taskFilterSchema,
 } from "@/validators/schemas";
 

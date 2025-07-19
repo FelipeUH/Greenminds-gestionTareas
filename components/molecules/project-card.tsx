@@ -3,6 +3,8 @@ import { Title } from "../atoms/title";
 import { Calendar } from "lucide-react";
 import { Project } from "@/types/database";
 
+// Componente que muestra la información de un proyecto dado
+// y redirecciona al panel de proyecto de dicho proyecto
 export function ProjectCard({
 	id,
 	name,

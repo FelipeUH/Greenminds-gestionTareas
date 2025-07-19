@@ -19,6 +19,10 @@ import { useRouter } from "next/router";
 import { Profile } from "@/types/database";
 import { AddMemberDialog } from "./add-member-dialog";
 
+// Componente de configuración del proyecto, contiene dos pestañas que muestran
+// una pantalla de edición, que permite modificar información del proyecto o eliminarlo,
+// y una pantalla de miembros, que permite agregar nuevos miembros al
+// proyecto y muestra los actuales
 export function SettingsTabs({
 	users,
 	projectName,

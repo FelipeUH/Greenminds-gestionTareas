@@ -36,6 +36,10 @@ const nullText_priorities: string = "Establecer prioridad";
 const nullText_assignment: string = "Asignar tarea";
 // priorities y nullText son atributos necesarios para el componente ComboBox
 
+// Componente de dialog, permite crear nuevas tareas en la pantalla de backlog de un
+// proyecto dado. El usuario define el titulo, descripción, asignación y prioridad 
+// de la nueva tarea
+// Se muestra un dialog de error o exito según sea el caso
 export function CreateTaskDialog() {
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");

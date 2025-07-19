@@ -1,6 +1,8 @@
 import { Profile } from "@/types/database";
 import { UserRow } from "../atoms/user-row";
 
+// Componente de tabla para mostrar los usuarios que pertenecen a un proyecto
+// en la aplicación
 export function UserTable({ users } : {users: Profile[]}) {
 
     return (

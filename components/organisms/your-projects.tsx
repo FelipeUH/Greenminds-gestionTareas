@@ -9,6 +9,9 @@ interface YourProjectsProps extends React.ComponentProps<"div"> {
   projects: Project[];
 }
 
+// Componente de tus proyectos, muestra todos los proyecto de los cuales el
+// usuario es project manager o miembro, permite acceder al panel de proyecto del
+// proyecto que elija, y también permite crear nuevos proyectos
 export function YourProjects({projects, className, ...props }: YourProjectsProps) {
   return (
     <div className={cn("bg-primary rounded-xl shadow-md p-12 flex flex-col gap-10", className)} {...props}>

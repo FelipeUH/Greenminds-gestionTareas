@@ -19,6 +19,7 @@ export const mockProject = {
   name: "Proyecto de Prueba",
   description: "Un proyecto para testing",
   project_manager_id: mockUser.id,
+  project_manager_name: "Jane Doe",
   start_date: new Date().toISOString(),
   end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 días desde ahora
   status: "active" as const,

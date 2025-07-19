@@ -9,6 +9,9 @@ const priorityTagText = {
 	low: "Baja",
 };
 
+// Componente que muestra la información de una tarea dada y permite definir una 
+// función que ejecutará al hacer click sobre ella
+// Esta función se usa en la aplicación mostrar un modal con más información
 export function TaskCard({
 	task,
 	onClick,

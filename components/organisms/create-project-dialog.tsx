@@ -14,6 +14,10 @@ import { PlusSquare, Save, X } from "lucide-react";
 import { useState } from "react";
 import { useDialog } from "@/context/DialogContext";
 
+// Componente de dialog, permite la creación de nuevos proyectos en la pantalla de
+// proyectos del usuario. El usuario define el nombre, descripción y fecha planeada
+// de finalización del proyecto
+// Se muestra un dialog de error o exito según sea el caso
 export function CreateProjectDialog() {
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");

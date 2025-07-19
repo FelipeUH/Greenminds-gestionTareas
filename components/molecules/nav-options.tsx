@@ -9,6 +9,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
+// Componente de navegación del AppSidebar, permite definir
+// las diferentes secciones que contiene la barra lateral
 export function NavProjects({
   options,
 }: {

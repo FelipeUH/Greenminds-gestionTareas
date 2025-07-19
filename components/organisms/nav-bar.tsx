@@ -6,6 +6,9 @@ import { ButtonWithIcon } from "../atoms/button-with-icon";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
+// Componente de navbar de la aplicación, contiene el nombre de la aplicación, que
+// permite redireccionar a la pantalla de proyectos del usuario, además del avatar y
+// el botón de cerrar sesión
 export function NavBar({ className, ...props }: React.ComponentProps<"div">) {
   const { user, logout } = useAuth();
 

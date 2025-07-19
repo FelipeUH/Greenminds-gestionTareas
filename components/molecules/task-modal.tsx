@@ -30,6 +30,8 @@ interface TaskModalProps {
 	onMarkAsDone: () => void;
 }
 
+// Componente de modal para mostrar más información de una tarea seleccionada
+// Ofrece la opción de marcar dicha tarea seleccionada como terminada
 export function TaskModal({
 	task,
 	modalOpen,

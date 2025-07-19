@@ -1,6 +1,8 @@
 import { Pie } from "react-chartjs-2";
 import "../../chartjs-setup";
 
+// Componente de gráfica de pie para el dashboard, muestra el porcentage de 
+// tareas del total según su prioridad
 export function PriorityPieChart({ tasksCount }: { tasksCount: number[] }) {
 	const data = {
 		labels: ["Alta", "Media", "Baja"],

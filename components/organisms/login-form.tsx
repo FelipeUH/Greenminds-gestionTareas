@@ -15,6 +15,10 @@ import { useDialog } from "@/context/DialogContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
 
+// Componente de formulario de inicio de sesión, permite que los usuarios hagan
+// login por medio de email y contraseña. También tiene un link que permite 
+// redireccionar a la pantalla de registro
+// Se muestra un dialog de error según sea el caso
 export function LoginForm({
 	className,
 	...props

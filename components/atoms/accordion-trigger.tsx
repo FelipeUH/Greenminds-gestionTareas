@@ -4,6 +4,7 @@ import { ChevronDownIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Title } from "./title"
 
+// Componente que despliega una lista del componente AppAccordion
 export function AccordionTrigger({
   className,
   children,

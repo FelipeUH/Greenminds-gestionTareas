@@ -3,6 +3,7 @@ export interface UserRowProps {
     email: string
 }
 
+// Componente de fila para UserTable, muestra el nombre y el email de un usuario dado
 export function UserRow( { username, email } : UserRowProps ) {
 	return (
 		<div className="flex items-center justify-between border-[#9E9393] border-t py-2">

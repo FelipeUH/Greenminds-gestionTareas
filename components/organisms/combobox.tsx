@@ -15,11 +15,18 @@ import {
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
+// Los elementos de tipo items son los que muestran en la combobox
+// Label es lo que el usuario ve y elige, mientras que value hace referencia
+// al valor que se manda en las diferentes peticiones
 export type Item = {
 	value: string;
 	label: string;
 };
 
+// Componente de combobox, lista desplegable con diferentes opciones 
+// para elegir. Items representa los elementos a mostrar, nullText representa
+// el texto mostrado si no se elige ningun elemento y onSelect permite capturar
+// el valor seleccionado fuera del componente
 export function ComboBox({
 	items,
 	nullText,

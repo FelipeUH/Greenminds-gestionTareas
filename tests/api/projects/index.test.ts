@@ -17,11 +17,12 @@ jest.mock("@/services/projectService", () => ({
 
 // Mock del middleware de autenticación
 jest.mock("@/utils/auth", () => ({
-  withAuth: (handler: any) => handler,
+  withAuth: (handler: NextApiHandler) => handler,
   AuthenticatedRequest: {},
 }));
 
 import { ProjectService } from "@/services/projectService";
+import { NextApiHandler } from "next";
 
 describe("/api/projects", () => {
   beforeEach(() => {
